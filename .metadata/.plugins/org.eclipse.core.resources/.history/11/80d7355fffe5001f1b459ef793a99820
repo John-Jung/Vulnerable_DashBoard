@@ -1,0 +1,107 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="user.UserDAO" %>
+<%@ page import="user.User" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html"; charset="UTF-8">
+<meta name="viewport" content="width=device-width", initial-scale="1">
+<link rel="stylesheet" href="css/bootstrap.css">
+<title>LogBlog</title>
+</head>
+<body>
+    <%
+        PrintWriter script = response.getWriter();
+        
+        // 1. 쿠키에서 순차적 세션 ID 체크
+        String sequentialSessionId = null;
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if("JSESSIONID".equals(cookie.getName()) && cookie.getValue().startsWith("USER")) {
+                    sequentialSessionId = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        
+        if(sequentialSessionId == null) {
+            script.println("<script>");
+            script.println("alert('로그인이 필요합니다.')");
+            script.println("location.href = 'login.jsp'");
+            script.println("</script>");
+            return;
+        }
+
+        // 2. 세션에서 userID 가져오기
+        String sessionUserID = (String) session.getAttribute("userID");
+        
+        // 3. URL 파라미터로 전달된 세션ID 체크
+        String paramSessionId = request.getParameter("sessionId");
+        if(paramSessionId != null && !paramSessionId.equals(sequentialSessionId)) {
+            script.println("<script>");
+            script.println("alert('잘못된 접근입니다.')");
+            script.println("location.href = 'main.jsp'");
+            script.println("</script>");
+            return;
+        }
+        
+        // 4. 사용자 정보 조회
+        User user = new UserDAO().getUser(sessionUserID);
+        if(user == null) {
+            script.println("<script>");
+            script.println("alert('존재하지 않는 사용자입니다.')");
+            script.println("location.href = 'main.jsp'");
+            script.println("</script>");
+            return;
+        }
+        
+        // 5. POST 요청으로 전달된 세션ID 체크
+        String formSessionId = request.getParameter("sessionId");
+        if(formSessionId != null && !formSessionId.equals(sequentialSessionId)) {
+            script.println("<script>");
+            script.println("alert('잘못된 접근입니다.')");
+            script.println("location.href = 'main.jsp'");
+            script.println("</script>");
+            return;
+        }
+    %>
+    
+    <!-- 네비게이션 바는 동일하게 유지 -->
+    
+    <div class="container">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+            <div class="jumbotron" style="padding-top: 20px;">
+                <form method="post" action="myPageAction.jsp" onsubmit="return validateForm()">
+                    <input type="hidden" name="sessionId" value="<%= sequentialSessionId %>">
+                    <h3 style="text-align: center;">내 정보</h3>
+                    <!-- 나머지 폼 내용은 동일 -->
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script>
+        function validateForm() {
+            var currentSessionId = "<%= sequentialSessionId %>";
+            var formSessionId = document.querySelector('input[name="sessionId"]').value;
+            
+            if(formSessionId !== currentSessionId) {
+                alert('잘못된 접근입니다.');
+                return false;
+            }
+            return true;
+        }
+
+        function changePassword() {
+            location.href = 'changePassword.jsp?sessionId=' + '<%= sequentialSessionId %>';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+Developer: Sungwuk Jung
+Oracle User Name: logblog
+Oracle Passwd: 1234
+Oracle sysdba Passwd: 1234

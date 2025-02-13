@@ -1,0 +1,7 @@
+INDEX VERSION 1.134
+/home/cent/Desktop/new-workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/707914891.index
+/LogBLog/src/main/java
+/home/cent/Desktop/new-workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/213228191.index
+/LogBlog/src/main/java
+/home/cent/Desktop/new-workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/2095509277.index
+/LogBlog/src/main/java

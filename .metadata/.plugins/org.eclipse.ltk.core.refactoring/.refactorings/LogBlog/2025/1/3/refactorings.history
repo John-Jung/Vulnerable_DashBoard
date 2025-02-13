@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename compilation unit &apos;util.JWTUtil.java&apos; to &apos;SimpleJWTUtil.java&apos;&#x0A;- Original project: &apos;LogBlog&apos;&#x0A;- Original element: &apos;util.JWTUtil.java&apos;&#x0A;- Renamed element: &apos;util.SimpleJWTUtil.java&apos;" description="Rename compilation unit &apos;JWTUtil.java&apos;" flags="2" id="org.eclipse.jdt.ui.rename.compilationunit" input="/src\/main\/java&lt;util{JWTUtil.java" name="SimpleJWTUtil.java" references="false" stamp="1736666522806" version="1.0"/>
+</session>

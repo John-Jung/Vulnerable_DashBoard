@@ -1,0 +1,110 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="user.UserDAO" %>
+<%@ page import="user.User" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html"; charset="UTF-8">
+<meta name="viewport" content="width=device-width", initial-scale="1">
+<link rel="stylesheet" href="css/bootstrap.css">
+<title>LogBlog</title>
+</head>
+<body>
+    <%
+        String userID = null;
+        if(session.getAttribute("userID") != null) {
+            userID = (String) session.getAttribute("userID");
+        }
+        
+        if(userID == null) {
+            PrintWriter script = response.getWriter();
+            script.println("<script>");
+            script.println("alert('로그인을 하세요.')");
+            script.println("location.href = 'login.jsp'");
+            script.println("</script>");
+        }
+        
+        User user = new UserDAO().getUser(userID);
+        if(user == null) {
+            PrintWriter script = response.getWriter();
+            script.println("<script>");
+            script.println("alert('존재하지 않는 사용자입니다.')");
+            script.println("location.href = 'main.jsp'");
+            script.println("</script>");
+        }
+        
+        // 세션 ID와 사용자 ID 일치 여부 검증 추가
+        String sessionUserID = (String) session.getAttribute("userID");
+        if(!userID.equals(sessionUserID)) {
+            PrintWriter script = response.getWriter();
+            script.println("<script>");
+            script.println("alert('아이디와 세션이 일치 하지 않습니다.')");
+            script.println("location.href = 'main.jsp'");
+            script.println("</script>");
+        }
+    %>
+    
+    <nav class="navbar navbar-default">
+        <!-- 네비게이션 바 코드는 동일하므로 생략 -->
+    </nav>
+    
+    <div class="container">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+            <div class="jumbotron" style="padding-top: 20px;">
+                <form method="post" action="myPageAction.jsp">
+                    <h3 style="text-align: center;">내 정보</h3>
+                    <div style="margin-top: 30px;">
+                        <div class="form-group">
+                            <label>아이디</label>
+                            <input type="text" class="form-control" name="userID" value="<%= user.getUserID() %>" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="text" class="form-control" name="userName" value="<%= user.getUserName() %>" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>성별</label>
+                            <input type="text" class="form-control" name="userGender" value="<%= user.getUserGender() %>" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>이메일</label>
+                            <input type="email" class="form-control" name="userEmail" value="<%= user.getUserEmail() %>" readonly>
+                        </div>
+                        <div class="row" style="margin-top: 20px;">
+                            <div class="col-xs-6">
+                                <button type="button" class="btn btn-primary" onclick="toggleEdit()">수정</button>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <button type="submit" class="btn btn-success" id="saveBtn" style="display: none;">저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script>
+        function toggleEdit() {
+            var inputs = document.getElementsByClassName('form-control');
+            var saveBtn = document.getElementById('saveBtn');
+            
+            for(var i = 1; i < inputs.length; i++) { // Skip userID input
+                if(inputs[i].readOnly) {
+                    inputs[i].readOnly = false;
+                    inputs[i].style.backgroundColor = '#ffffff';
+                    saveBtn.style.display = 'block';
+                } else {
+                    inputs[i].readOnly = true;
+                    inputs[i].style.backgroundColor = '';
+                    saveBtn.style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

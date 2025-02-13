@@ -1,0 +1,287 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="blog.Blog" %>
+<%@ page import="blog.BlogDAO" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html"; charset="UTF-8">
+<meta name="viewport" content="width=device-width", initial-scale="1">
+<link rel="stylesheet" href="css/bootstrap.css">
+<title>LogBlog</title>
+<style>
+.modal-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    width: 90%;
+    height: 90%;
+    margin: 2% auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.close-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    z-index: 1001;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.modal-iframe {
+    width: 100%;
+    height: calc(100% - 20px);
+    border: none;
+    margin-top: 10px;
+}
+</style>
+</head>
+<body>
+	<%
+    String userID = null;
+    String userRole = request.getParameter("userRole");
+    String password = request.getParameter("password");
+    
+    if(session.getAttribute("userID") != null){
+        userID = (String) session.getAttribute("userID");
+    }
+    
+    int blogID = 0;
+    if (request.getParameter("blogID") != null){
+        blogID = Integer.parseInt(request.getParameter("blogID"));
+    }
+    
+    if (blogID == 0){
+        PrintWriter script = response.getWriter();
+        script.println("<script>");
+        script.println("alert('유효하지 않는 글입니다.')");
+        script.println("location.href = 'logblog.jsp'");
+        script.println("</script>");
+    }
+    
+    Blog blog = new BlogDAO().getBlog(blogID);
+    
+    // 비밀글 접근 권한 체크
+    if(blog.getIsSecret() == 1) {
+        if(userRole.equals("guest")) {
+            // guest는 비밀번호 체크
+            if(password == null || !password.equals(blog.getPassword())) {
+                PrintWriter script = response.getWriter();
+                script.println("<script>");
+                script.println("alert('비밀번호가 일치하지 않습니다.')");
+                script.println("history.back()");
+                script.println("</script>");
+                return;
+            }
+        }
+    }
+	%>
+
+	<nav class="navbar navbar-default">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed"
+				data-toggle="collapse" data-target="#bs-example-navbar-collpase-1"
+				aria-expanded="false">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="main.jsp">LogBlog</a>
+		</div>
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li><a href="main.jsp">메인</a></li>
+				<li class="active"><a href="logblog.jsp">게시판</a></li>
+			</ul>
+			<%
+				if(userID == null) {
+			%>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">접속하기<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a href="login.jsp">로그인</a></li>
+						<li><a href="join.jsp">회원가입</a></li>
+					</ul>
+				</li>
+			</ul>
+			<%
+				} else {
+			%>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">회원관리<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a href="logoutAction.jsp">로그아웃</a></li>
+					</ul>
+				</li>
+			</ul>
+			<%
+				}
+			%>
+		</div>
+	</nav>
+	<div class="container">
+		<div class="row">
+			<table class="table table-striped" style="text-align: center; border: 1px solid #dddddd">
+				<thead>
+					<tr>
+						<th colspan="3" style="background-color: #eeeeee; text-align: center;">게시판 글보기 양식</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="width: 20%;">글 제목</td>
+						<td colspan="2"><%= blog.getBlogTitle() %></td>
+					</tr>
+					<tr>
+						<td>작성자</td>
+						<td colspan="2"><%= blog.getUserID() %></td>
+					</tr>
+					<tr>
+						<td>작성일자</td>
+						<td colspan="2"><%= blog.getBlogDate().substring(0, 11) + blog.getBlogDate().substring(11, 13) + "시" + blog.getBlogDate().substring(14, 16) + "분" %></td>
+					</tr>
+					<tr>
+						<td>내용</td>
+						<td colspan="2" style="min-height: 200px; text-align: left">
+                            <div id="content-container">
+                                <%= blog.getBlogContent() %>
+                            </div>
+                        </td>
+					</tr>
+					<%
+					    if(blog.getFileName() != null && !blog.getFileName().isEmpty()) {
+					%>
+					<tr>
+					    <td>업로드</td>
+					    <td colspan="2">
+					        <a href="uploads/<%= blog.getFileName() %>"><%= blog.getFileName() %></a>
+					    </td>
+					</tr>
+					<tr>
+					    <td>다운로드</td>
+					    <td colspan="2" style="text-align: center;">
+					        <a href="download.jsp?filename=<%= blog.getFileName() %>"><%= blog.getFileName() %></a>
+					    </td>
+					</tr>
+					<tr>
+					    <td colspan="2">
+					        <a href="view_file.jsp?filename=<%= blog.getFileName() %>"><%= blog.getFileName() %></a>
+					    </td>
+					</tr>
+					<%
+					    }
+					%>
+				</tbody>
+			</table>
+			<a href="logblog.jsp" class="btn btn-primary">목록</a>
+			<%
+				if (userID != null && userID.equals(blog.getUserID())){
+			%>
+					<a href="update.jsp?blogID=<%= blogID %>" class="btn btn-primary">수정</a>
+					<a onclick="return confirm('정말로 삭제하시겠습니까?')" href="deleteAction.jsp?blogID=<%= blogID %>" class="btn btn-primary">삭제</a>
+			<%
+				}
+			%>
+			 <!-- 게시판 규정 버튼 추가 -->
+            <button class="btn btn-info btn-spacing" onclick="showLawModal()">게시판 규정</button>
+			<input type="submit" class="btn btn-primary pull-right" value="글쓰기">
+		</div>
+	</div>
+	 <!-- 게시판 규정 모달 -->
+    <div id="lawModal" class="modal-container">
+        <div class="modal-content">
+            <span class="close-btn" onclick="hideLawModal()">&times;</span>
+            <iframe src="logbloglaw.jsp" class="modal-iframe"></iframe>
+        </div>
+    </div>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="js/bootstrap.js"></script>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 내용을 담고 있는 컨테이너를 찾습니다
+    const contentContainer = document.getElementById('content-container');
+    
+    // iframe을 직접 찾습니다 (innerHTML을 파싱하지 않고)
+    const iframes = contentContainer.getElementsByTagName('iframe');
+    
+    // NodeList를 배열로 변환하여 처리
+    Array.from(iframes).forEach(iframe => {
+        const iframeSrc = iframe.getAttribute('src');  // src 속성 직접 가져오기
+        
+        // 모달 컨테이너 생성
+        const modalContainer = document.createElement('div');
+        modalContainer.className = 'modal-container';
+        
+        // 모달 컨텐츠 생성
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        // 닫기 버튼 추가
+        const closeBtn = document.createElement('span');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.className = 'close-btn';
+        closeBtn.onclick = function() {
+            modalContainer.style.display = 'none';
+        };
+        
+        // 새로운 iframe 생성
+        const modalIframe = document.createElement('iframe');
+        modalIframe.src = iframeSrc;
+        modalIframe.className = 'modal-iframe';
+        
+        // 모달 조립
+        modalContent.appendChild(closeBtn);
+        modalContent.appendChild(modalIframe);
+        modalContainer.appendChild(modalContent);
+        document.body.appendChild(modalContainer);
+        
+        // iframe을 버튼으로 교체
+        const button = document.createElement('button');
+        button.textContent = '페이지 보기';
+        button.className = 'btn btn-info';
+        button.onclick = function() {
+            modalContainer.style.display = 'block';
+        };
+        
+        // 원래 iframe을 버튼으로 교체
+        iframe.parentNode.replaceChild(button, iframe);
+        
+        // 모달 외부 클릭시 닫기
+        modalContainer.onclick = function(e) {
+            if (e.target === modalContainer) {
+                modalContainer.style.display = 'none';
+            }
+        };
+    });
+});
+</script>
+</body>
+</html>

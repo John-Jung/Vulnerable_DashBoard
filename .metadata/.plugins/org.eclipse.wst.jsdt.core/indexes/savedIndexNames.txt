@@ -1,0 +1,9 @@
+INDEX VERSION 1.4+/home/cent/Desktop/new-workspace/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes
+1426884397.index
+213228191.index
+213228191.index
+1001899960.index
+4280894358.index
+511238887.index
+4174264092.index
+1775975436.index
