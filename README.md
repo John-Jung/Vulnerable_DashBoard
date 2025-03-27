@@ -20,13 +20,13 @@
 
 | 라이브러리 명                | 설명                                                                                      |
 |----------------------------|-----------------------------------------------------------------------------------------|
-| **HikariCP-5.1.0.jar**      | 고성능 JDBC 커넥션 풀 라이브러리. 데이터베이스 커넥션 관리 성능을 최적화하는 데 사용됩니다.            |
-| **activation-1.1.jar**      | JavaBeans Activation Framework. MIME 타입 처리를 위해 이메일 발송 및 파일 업로드에서 사용됩니다.      |
-| **cos.jar**                 | O'Reilly 제공 파일 업로드 라이브러리. `MultipartRequest` 클래스를 통해 JSP에서 파일 업로드 기능을 구현합니다. |
-| **javax.mail-1.6.2.jar**    | JavaMail API. 이메일 발송 기능 구현 시 사용됩니다.                                                     |
-| **json-simple-1.1.1.jar**   | 가벼운 JSON 파싱 및 생성 라이브러리. 서버와 클라이언트 간 JSON 데이터 처리 시 사용됩니다.                  |
-| **ojdbc8.jar**              | Oracle JDBC 드라이버. Oracle DB 19와 JDBC 연결을 위한 필수 드라이버입니다.                             |
-| **slf4j-api-2.0.9.jar**     | Simple Logging Facade for Java. 다양한 로깅 프레임워크와 연결할 수 있는 로깅 API입니다.                  |
+| **HikariCP-5.1.0.jar**      | 고성능 JDBC 커넥션 풀 라이브러리. 데이터베이스 커넥션 관리 성능을 최적화하는 데 사용            |
+| **activation-1.1.jar**      | JavaBeans Activation Framework. MIME 타입 처리를 위해 이메일 발송 및 파일 업로드에서 사용      |
+| **cos.jar**                 | O'Reilly 제공 파일 업로드 라이브러리. `MultipartRequest` 클래스를 통해 JSP에서 파일 업로드 기능 |
+| **javax.mail-1.6.2.jar**    | JavaMail API. 이메일 발송 기능 구현 시 사용                                                     |
+| **json-simple-1.1.1.jar**   | 가벼운 JSON 파싱 및 생성 라이브러리. 서버와 클라이언트 간 JSON 데이터 처리 시 사용                 |
+| **ojdbc8.jar**              | Oracle JDBC 드라이버. Oracle DB 19와 JDBC 연결을 위한 드라이버                             |
+| **slf4j-api-2.0.9.jar**     | Simple Logging Facade for Java. 다양한 로깅 프레임워크와 연결할 수 있는 로깅 API                  |
 
 
 
